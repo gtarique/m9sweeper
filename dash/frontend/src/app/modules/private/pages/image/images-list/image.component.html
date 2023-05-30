@@ -1,5 +1,5 @@
-<div class="image-container">
-  <div class="image-list">
+<div class="page-table-container">
+  <div class="page-table-list">
     <div class="sub-navigation row">
       <div class="col-lg-4 col-xs-12">
         <span>Images</span>
@@ -29,7 +29,7 @@
       </div>
     </div>
     <mat-card appearance="outlined">
-      <div class="image-table">
+      <div class="page-table">
         <mat-table [dataSource]="dataSource" matSort  matSortActive="date" matSortDisableClear matSortDirection="desc">
           <ng-container matColumnDef="name">
             <mat-header-cell *matHeaderCellDef mat-sort-header disableClear>Name and Tag</mat-header-cell>
@@ -75,7 +75,7 @@
 
           <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
           <mat-row *matRowDef="let row; columns: displayedColumns;"
-                   (click)="getImageScannerDetails(row)" class="image-click">
+                   (click)="getImageScannerDetails(row)" class="table-row">
           </mat-row>
         </mat-table>
       </div>

@@ -1,6 +1,6 @@
-<div class="kubernetes-object-container">
-  <div class="kubernetes-object-list">
-    <div class="kubernetes-object-sub-navigation">
+<div class="page-table-container">
+  <div class="page-table-list">
+    <div class="sub-navigation">
       <div class="kubernetes-object-header">
         <div class="content-breadcrumbs">
           <ol class="breadcrumb">
@@ -18,7 +18,7 @@
       </div>
     </div>
     <mat-card appearance="outlined">
-      <div class="namespaces-table">
+      <div>
         <mat-table [dataSource]="dataSource" matSort matSortActive="name" matSortDisableClear matSortDirection="asc">
           <ng-container matColumnDef="name">
             <mat-header-cell *matHeaderCellDef mat-sort-header disableClear>Name</mat-header-cell>
