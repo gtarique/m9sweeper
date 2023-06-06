@@ -459,3 +459,19 @@ app-private {
     }
   }
 }
+
+.subnav-title {
+  font-size: 26px;
+  font-weight: normal;
+
+  @media all and (max-width: 850px) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-bottom: 35px;
+  }
+  @media all and (max-width: 377px) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-bottom: 35px;
+  }
+}

@@ -6,10 +6,6 @@ div {
       height: 100%;
       justify-content: flex-start;
 
-      .subnav-title{
-        font-size: 26px;
-        font-weight: normal;
-      }
       > div {
         &.create-api-form-card {
           display: flex;

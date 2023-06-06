@@ -4,10 +4,6 @@
 div.create-exception-container {
   height:calc(var(--organization-container-height) - 52px);
   overflow: auto;
-  .subnav-title {
-  font-size: 26px;
-  font-weight: normal;
-  }
   > div {
     mat-form-field {
       width: 100%;
