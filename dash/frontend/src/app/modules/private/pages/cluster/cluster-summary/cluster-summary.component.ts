@@ -77,7 +77,7 @@ export class ClusterSummaryComponent implements OnInit, AfterViewInit, OnDestroy
     yAxisTicks: [],
   };
   complianceSummaryLineChartAttributes = {
-    view: [],
+    view: [480, 260],
     colorScheme: {
       domain: ['#59e059']
     },
@@ -171,7 +171,7 @@ export class ClusterSummaryComponent implements OnInit, AfterViewInit, OnDestroy
       this.lineChartAttributes.view = this.chartSizeService.getDashboardChartSize(this.breakpointLarge,
         this.breakpointMedium, false);
       this.barChartAttributes.view = this.lineChartAttributes.view;
-      this.complianceSummaryLineChartAttributes.view = this.lineChartAttributes.view;
+      // this.complianceSummaryLineChartAttributes.view = this.lineChartAttributes.view;
     }, 50);
   }
 
