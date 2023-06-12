@@ -346,49 +346,6 @@ app-private {
 
 // Styles for the pages contains table
 
-:root{
-  --page-table-height: 981px;
-}
-
-.page-table-container {
-  height:calc(var(--page-table-height) - 52px);
-  overflow: auto;
-  .page-table-list {
-    margin: 15px 15px 10px 15px;
-    display: flex;
-    flex-direction: column;
-    max-height: calc(var(--page-table-height) - 110px);
-    height: 100%;
-    >div.sub-navigation {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      height: 100px;
-      margin: 0 0 0 0;
-      > div.col-lg-4 {
-        padding: 0px;
-        > span {
-          margin-right: 15px;
-          font-size: 26px;
-        }
-      }
-    }
-  }
-  > mat-toolbar {
-    display: flex;
-    justify-content: space-between;
-    > mat-icon-button {
-      margin-left: 5px;
-      padding-bottom: 10px;
-    }
-  }
-  /* TODO(mdc-migration): The following rule targets internal classes of paginator that may no longer apply for the MDC version.*/
-  mat-paginator {
-    display: flex;
-    justify-content: center;
-  }
-}
-
 .page-table {
   // flex: 1;
   overflow: auto;
@@ -426,52 +383,5 @@ app-private {
       max-width: 50px;
       text-align: center;
     }
-  }
-}
-
-@media print {
-  div {
-    &.page-table-container {
-      height: auto !important;
-      overflow: auto !important;
-
-      .page-table-list {
-        height: unset !important;
-        max-height: unset !important;
-        overflow: auto !important;
-        width: 100% !important;
-
-        .search-scan-col, .image-create-btn, .paginator {
-          display: none !important;
-        }
-
-        div.page-table {
-          margin-top: 10px !important;
-          overflow: unset !important;
-          height: auto !important;
-          /* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
-          mat-table {
-            height: auto !important;
-            min-width: 100% !important;
-          }
-        }
-      }
-    }
-  }
-}
-
-.subnav-title {
-  font-size: 26px;
-  font-weight: normal;
-
-  @media all and (max-width: 850px) {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding-bottom: 35px;
-  }
-  @media all and (max-width: 377px) {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding-bottom: 35px;
   }
 }

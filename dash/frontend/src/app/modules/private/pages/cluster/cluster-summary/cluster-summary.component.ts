@@ -41,7 +41,7 @@ export class ClusterSummaryComponent implements OnInit, AfterViewInit, OnDestroy
   @ViewChild(MatSort, {static: true}) sort: MatSort;
   dataSource: MatTableDataSource<INamespaceTotalVulnerability>;
   barChartAttributes = {
-    view: [],
+    view: [480, 260],
     colorScheme: {
       domain: ['#ec3c3c', '#f3865f', '#596fe0', '#59e059']
     },
@@ -170,7 +170,7 @@ export class ClusterSummaryComponent implements OnInit, AfterViewInit, OnDestroy
       this.updateFormatting();
       this.lineChartAttributes.view = this.chartSizeService.getDashboardChartSize(this.breakpointLarge,
         this.breakpointMedium, false);
-      this.barChartAttributes.view = this.lineChartAttributes.view;
+      // this.barChartAttributes.view = this.lineChartAttributes.view;
       // this.complianceSummaryLineChartAttributes.view = this.lineChartAttributes.view;
     }, 50);
   }
