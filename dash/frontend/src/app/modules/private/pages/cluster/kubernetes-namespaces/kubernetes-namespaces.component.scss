@@ -1,7 +1,6 @@
-.kubernetes-object-header {
-  flex-direction: column;
-
-  div.content-name {
-    font-size: 26px;
+.adjust-height {
+  height: auto !important;
+  .calendar-date-picker {
+    margin: 20px -10px 0 0;
   }
 }
