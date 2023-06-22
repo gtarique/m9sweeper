@@ -581,3 +581,18 @@ mat-form-field {
 }
 
 // CSS for Report pages [END]
+
+.margin-0 {
+  margin: 0;
+}
+
+.k8-pods-adjust-height {
+  height: auto !important;
+  .calendar-date-picker {
+    margin: 20px -10px 0 0;
+  }
+}
+
+app-datepicker-component {
+  margin-left: 20px;
+}
