@@ -89,7 +89,55 @@
   @media only screen and (min-width: 280px) and (max-width: 1024px) {
     padding-top: 0;
   }
-  width: calc(var(--cluster-container-width) - 10px);
+
+  @media only screen and (min-width: 1752px)and (max-width: 1835px) {
+    padding-top: 0;
+    width: 99.9%;
+  }
+
+  @media only screen and (min-width: 1620px)and (max-width: 1754px) {
+    padding-top: 0;
+    width: 99.8%;
+  }
+  @media only screen and (min-width: 1580px)and (max-width: 1619px) {
+    padding-top: 0;
+    width: 99.6%;
+  }
+
+  @media only screen and (min-width: 1460px)and (max-width: 1579px) {
+    padding-top: 0;
+    width: 99.5%;
+  }
+  @media only screen and (min-width: 1360px)and (max-width: 1459px) {
+    padding-top: 0;
+    width: 99.3%;
+  }
+
+  @media only screen and (min-width: 1352px)and (max-width: 1363px) {
+    padding-top: 0;
+    width: 99.2%;
+  }
+
+  @media only screen and (min-width: 980px)and (max-width: 1351px) {
+    padding-top: 0;
+    width: 99%;
+  }
+
+  @media only screen and (min-width: 762px)and (max-width: 979px) {
+    padding-top: 0;
+    width: 97.9%;
+  }
+
+  @media only screen and (min-width: 610px)and (max-width: 762px) {
+    padding-top: 0;
+    width: 97%;
+  }
+
+  @media only screen and (min-width: 280px)and (max-width: 609px) {
+    padding-top: 0;
+    width: 95.5%;
+  }
+  width: 100%;
 
   margin: 0 0 0 10px;
   height: 200px;
@@ -115,3 +163,7 @@
   margin-top: -22px;
   margin-bottom: -10px;
 }
+
+//.fix-margin-right {
+//  margin-right: -9px;
+//}

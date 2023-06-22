@@ -1,6 +1,6 @@
 <div class="page-container">
   <div class="page-container-content">
-    <div class="page-title-button-group-spacing k8-pods-adjust-height">
+    <div class="page-title-button-group-spacing k8-adjust-height">
       <div class="content-breadcrumbs">
         <ol class="breadcrumb">
           <li class="breadcrumb-item">
@@ -21,7 +21,7 @@
         <app-datepicker-component (newDateSelected)="dateChanged($event)" [initialDate]="initialDate"></app-datepicker-component>
       </div>
     </div>
-    <div class="mat-elevation-z8 page-table k8-pods-adjust-height">
+    <div class="mat-elevation-z8 page-table k8-adjust-height">
       <mat-table [dataSource]="dataSource" matSort>
         <ng-container matColumnDef="name">
           <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
