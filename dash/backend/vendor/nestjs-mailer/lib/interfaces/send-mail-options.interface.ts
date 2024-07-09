@@ -1,5 +1,6 @@
 import { SendMailOptions } from 'nodemailer';
 import * as DKIM from 'nodemailer/lib/dkim';
+import { Attachment } from 'nodemailer/lib/mailer';
 
 export type TextEncoding = 'quoted-printable' | 'base64';
 export type Headers =
@@ -19,7 +20,7 @@ export interface ISendMailOptions extends SendMailOptions {
   to?: string | Address | Array<string | Address>;
   cc?: string | Address | Array<string | Address>;
   bcc?: string | Address | Array<string | Address>;
-  replyTo?: string | Address;
+  replyTo?: string | Address | Array<string | Address>;
   inReplyTo?: string | Address;
   from?: string | Address;
   subject?: string;
@@ -37,5 +38,6 @@ export interface ISendMailOptions extends SendMailOptions {
   };
   transporterName?: string;
   template?: string;
+  attachments?: Attachment[];
   dkim?: DKIM.Options;
 }

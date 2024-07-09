@@ -1,8 +1,8 @@
 /** Dependencies **/
 import { get, defaultsDeep } from 'lodash';
-import { Injectable, Inject, Optional } from '@nestjs/common';
+import { Injectable, Inject, Optional, Logger } from '@nestjs/common';
 import { SentMessageInfo, Transporter } from 'nodemailer';
-import * as previewEmail from 'preview-email';
+import * as smtpTransport from 'nodemailer/lib/smtp-transport';
 
 /** Constants **/
 import {
@@ -19,9 +19,9 @@ import { MailerTransportFactory } from './mailer-transport.factory';
 
 @Injectable()
 export class MailerService {
-  private readonly transporter!: Transporter;
+  private transporter!: Transporter;
   private transporters = new Map<string, Transporter>();
-
+  private templateAdapter: TemplateAdapter;
   private initTemplateAdapter(
     templateAdapter: TemplateAdapter,
     transporter: Transporter,
@@ -35,15 +35,30 @@ export class MailerService {
         return templateAdapter.compile(mail, callback, this.mailerOptions);
       });
 
-      if (this.mailerOptions.preview) {
-        transporter.use('stream', (mail, callback) => {
+      let previewEmail;
+
+      try {
+        previewEmail = require('preview-email');
+      } catch (err) {
+        this.mailerLogger.warn('preview-email is not installed. This is an optional dependency. Install it if you want to preview emails in the development environment. You can install it using npm (npm install preview-email), yarn (yarn add preview-email), or pnpm (pnpm add preview-email).');
+      }
+
+    if (this.mailerOptions.preview) {
+      transporter.use('stream', (mail, callback) => {
+        if (typeof previewEmail !== 'undefined') {
           return previewEmail(mail.data, this.mailerOptions.preview)
             .then(() => callback())
             .catch(callback);
-        });
-      }
+        } else {
+          this.mailerLogger.warn('previewEmail is not available. Skipping preview.');
+          return callback();
+        }
+      });
+    }
     }
   }
+
+  private readonly mailerLogger = new Logger(MailerService.name);
 
   constructor(
     @Inject(MAILER_OPTIONS) private readonly mailerOptions: MailerOptions,
@@ -54,18 +69,11 @@ export class MailerService {
     if (!transportFactory) {
       this.transportFactory = new MailerTransportFactory(mailerOptions);
     }
-    if (
-      (!mailerOptions.transport ||
-        Object.keys(mailerOptions.transport).length <= 0) &&
-      !mailerOptions.transports
-    ) {
-      throw new Error(
-        'Make sure to provide a nodemailer transport configuration object, connection url or a transport plugin instance.',
-      );
-    }
+
+    this.validateTransportOptions();
 
     /** Adapter setup **/
-    const templateAdapter: TemplateAdapter = get(
+    this.templateAdapter = get(
       this.mailerOptions,
       'template.adapter',
     );
@@ -83,23 +91,56 @@ export class MailerService {
     }
 
     /** Transporters setup **/
-    if (mailerOptions.transports) {
-      Object.keys(mailerOptions.transports).forEach((name) => {
-        this.transporters.set(
-          name,
-          this.transportFactory.createTransport(
-            this.mailerOptions.transports![name],
-          ),
-        );
-        this.initTemplateAdapter(templateAdapter, this.transporters.get(name)!);
+    this.setupTransporters();
+  }
+
+  private validateTransportOptions(): void {
+    if (
+      (!this.mailerOptions.transport ||
+        Object.keys(this.mailerOptions.transport).length <= 0) &&
+      !this.mailerOptions.transports
+    ) {
+      throw new Error(
+        'Make sure to provide a nodemailer transport configuration object, connection url or a transport plugin instance.',
+      );
+    }
+  }
+
+  private createTransporter(config: string | smtpTransport | smtpTransport.Options, name?: string): Transporter {
+    const transporter = this.transportFactory.createTransport(config);
+    if (this.mailerOptions.verifyTransporters) this.verifyTransporter(transporter, name);
+    this.initTemplateAdapter(this.templateAdapter, transporter);
+    return transporter;
+  }
+
+  private setupTransporters(): void {
+    if (this.mailerOptions.transports) {
+      Object.keys(this.mailerOptions.transports).forEach((name) => {
+        const transporter = this.createTransporter(this.mailerOptions.transports![name], name);
+        this.transporters.set(name, transporter);
       });
     }
 
-    /** Transporter setup **/
-    if (mailerOptions.transport) {
-      this.transporter = this.transportFactory.createTransport();
-      this.initTemplateAdapter(templateAdapter, this.transporter);
+    if (this.mailerOptions.transport) {
+      this.transporter = this.createTransporter(this.mailerOptions.transport);
     }
+  }
+
+  private verifyTransporter(transporter: Transporter, name?: string): void {
+    const transporterName = name ? ` '${name}'` : '';
+    if (!transporter.verify) return;
+    Promise.resolve(transporter.verify())
+      .then(() => this.mailerLogger.debug(`Transporter${transporterName} is ready`))
+      .catch((error) => this.mailerLogger.error(`Error occurred while verifying the transporter${transporterName}: ${error.message}`));
+  }
+
+  public async verifyAllTransporters() {
+    const transporters = [...this.transporters.values(), this.transporter];
+    const transportersVerified = await Promise.all(transporters.map(transporter => {
+      if (!transporter.verify) return true; // Can't verify with nodemailer-sendgrid, so assume it's verified
+      return Promise.resolve(transporter.verify()).then(() => true).catch(() => false);
+    }));
+    return transportersVerified.every(verified => verified);
   }
 
   public async sendMail(
@@ -125,5 +166,14 @@ export class MailerService {
         throw new ReferenceError(`Transporter object undefined`);
       }
     }
+  }
+
+  addTransporter(transporterName: string, config: string | smtpTransport | smtpTransport.Options): string {
+    this.transporters.set(
+      transporterName,
+      this.transportFactory.createTransport(config),
+    );
+    this.initTemplateAdapter(this.templateAdapter, this.transporters.get(transporterName)!);
+    return transporterName;
   }
 }

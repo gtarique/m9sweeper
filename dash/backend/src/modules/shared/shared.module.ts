@@ -6,7 +6,8 @@ import {FileManagementController} from './controllers/file-management.controller
 import {MulterModule} from '@nestjs/platform-express';
 import {FileManagementService} from './services/file-management.service';
 import {FileManagementDao} from './dao/file-management.dao';
-import {HandlebarsAdapter, MailerModule} from '@nestjs-modules/mailer';
+import {MailerModule} from '@nestjs-modules/mailer';
+import {HandlebarsAdapter} from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import {EmailService} from './services/email.service';
 import { ConfigService } from "@nestjs/config";
 import {RabbitMQService} from './services/RabbitMQService';

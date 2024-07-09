@@ -2,6 +2,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as handlebars from 'handlebars';
+import { inline } from '@css-inline/css-inline';
 import * as glob from 'glob';
 import { get } from 'lodash';
 import { HelperDeclareSpec } from 'handlebars';
@@ -9,28 +10,39 @@ import { HelperDeclareSpec } from 'handlebars';
 /** Interfaces **/
 import { MailerOptions } from '../interfaces/mailer-options.interface';
 import { TemplateAdapter } from '../interfaces/template-adapter.interface';
+import { TemplateAdapterConfig } from '../interfaces/template-adapter-config.interface';
 
 export class HandlebarsAdapter implements TemplateAdapter {
   private precompiledTemplates: {
     [name: string]: handlebars.TemplateDelegate;
   } = {};
 
-  constructor(helpers?: HelperDeclareSpec) {
+  private config: TemplateAdapterConfig = {
+    inlineCssOptions: {},
+    inlineCssEnabled: true,
+  };
+
+  constructor(helpers?: HelperDeclareSpec, config?: TemplateAdapterConfig) {
     handlebars.registerHelper('concat', (...args) => {
       args.pop();
       return args.join('');
     });
     handlebars.registerHelper(helpers || {});
+    Object.assign(this.config, config);
   }
 
   public compile(mail: any, callback: any, mailerOptions: MailerOptions): void {
     const precompile = (template: any, callback: any, options: any) => {
+      const templateBaseDir = get(options, 'dir', '');
       const templateExt = path.extname(template) || '.hbs';
-      const templateName = path.basename(template, path.extname(template));
-      const templateDir = template.startsWith('./')
+      let templateName = path.basename(template, path.extname(template));
+      const templateDir = path.isAbsolute(template)
         ? path.dirname(template)
-        : get(options, 'dir', '');
+        : path.join(templateBaseDir, path.dirname(template));
       const templatePath = path.join(templateDir, templateName + templateExt);
+      templateName = path
+        .relative(templateBaseDir, templatePath)
+        .replace(templateExt, '');
 
       if (!this.precompiledTemplates[templateName]) {
         try {
@@ -65,21 +77,30 @@ export class HandlebarsAdapter implements TemplateAdapter {
     });
 
     if (runtimeOptions.partials) {
-      const files = glob.sync(path.join(runtimeOptions.partials.dir, '*.hbs'));
+      const partialPath = path
+        .join(runtimeOptions.partials.dir, '**', '*.hbs')
+        .replace(/\\/g, '/');
+
+      const files = glob.sync(partialPath);
+
       files.forEach((file) => {
         const { templateName, templatePath } = precompile(
           file,
           () => {},
           runtimeOptions.partials,
         );
+        const templateDir = path.relative(
+          runtimeOptions.partials.dir,
+          path.dirname(templatePath),
+        );
         handlebars.registerPartial(
-          templateName,
+          path.join(templateDir, templateName),
           fs.readFileSync(templatePath, 'utf-8'),
         );
       });
     }
 
-    mail.data.html = this.precompiledTemplates[templateName](
+    const rendered = this.precompiledTemplates[templateName](
       mail.data.context,
       {
         ...runtimeOptions,
@@ -87,6 +108,15 @@ export class HandlebarsAdapter implements TemplateAdapter {
       },
     );
 
+    if (this.config.inlineCssEnabled) {
+      try {
+        mail.data.html = inline(rendered, this.config.inlineCssOptions);
+      } catch (e) {
+        callback(e);
+      }
+    } else {
+      mail.data.html = rendered;
+    }
     return callback();
   }
 }

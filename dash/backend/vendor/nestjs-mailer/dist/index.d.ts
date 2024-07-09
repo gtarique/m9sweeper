@@ -1,5 +1,4 @@
 export { MailerModule } from './mailer.module';
-export { HandlebarsAdapter } from './adapters/handlebars.adapter';
 export { MAILER_OPTIONS, MAILER_TRANSPORT_FACTORY, } from './constants/mailer.constant';
 export { MailerOptions } from './interfaces/mailer-options.interface';
 export { TemplateAdapter } from './interfaces/template-adapter.interface';

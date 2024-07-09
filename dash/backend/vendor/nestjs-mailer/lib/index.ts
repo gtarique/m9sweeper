@@ -1,9 +1,6 @@
 /** Modules **/
 export { MailerModule } from './mailer.module';
 
-/** Adapters **/
-export { HandlebarsAdapter } from './adapters/handlebars.adapter';
-
 /** Constants **/
 export {
   MAILER_OPTIONS,
